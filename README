@@ -1,0 +1,11 @@
+A simple coroutine library for c++, modeling coroutine from lua.
+
+usage:
+1. create a schedluer:
+CoroutineScheduler* sched = new CoroutineScheduler(1024);
+2. create coroutine:
+int id = sched->CreateCoroutine(func, arg);
+3. run coroutine:
+uintptr_t ret = sched->ResumeCoroutine(id);
+
+
