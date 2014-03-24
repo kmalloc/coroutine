@@ -6,7 +6,7 @@ using namespace std;
 
 CoroutineScheduler* sched = NULL;
 
-void func1(void* arg)
+uintptr_t func1(void* arg)
 {
     uintptr_t ret;
     cout << "function1 a now!,arg:" << arg << ", start to yield." << endl;
@@ -15,13 +15,16 @@ void func1(void* arg)
     ret = sched->Yield((uintptr_t)"func1 yield 2");
     cout << "2.fun1 return from yield:" << (const char*)ret << ", going to stop" << endl;
 
+    return (uintptr_t)"func1 stop";
 }
 
-void func2(void* s)
+uintptr_t func2(void* s)
 {
     cout << "function2 a now!, arg:" << s << ", start to yield." << endl;
     const char* y = (const char*)sched->Yield((uintptr_t)"func2 yield 1");
     cout << "fun2 return from yield:" << y <<", going to stop" << endl;
+
+    return (uintptr_t)"func2 stop";
 }
 
 int main()

@@ -7,7 +7,7 @@ class CoroutineScheduler // non copyable
 {
     public:
 
-        typedef void (*CoFunc)(void* arg);
+        typedef uintptr_t (*CoFunc)(void* arg);
 
         enum Status
         {

@@ -96,7 +96,7 @@ void CoroutineScheduler::SchedulerImpl::Schedule(void* arg)
     coroutine* cor = sched->id2routine_[running];
     assert(cor);
 
-    cor->func(cor->arg);
+    cor->yield = cor->func(cor->arg);
 
     sched->running_ = -1;
     cor->status = CO_FINISHED;
@@ -138,6 +138,7 @@ uintptr_t CoroutineScheduler::SchedulerImpl::ResumeCoroutine(int id, uintptr_t y
                 cor->cxt.uc_link = &mainContext_;
 
                 running_ = id;
+                // setup coroutine context
                 makecontext(&cor->cxt, (void (*)())Schedule, 1, this);
                 swapcontext(&mainContext_, &cor->cxt);
             }
@@ -154,6 +155,7 @@ uintptr_t CoroutineScheduler::SchedulerImpl::ResumeCoroutine(int id, uintptr_t y
     }
 
     uintptr_t ret = cor->yield;
+    cor->yield = 0;
 
     if (running_ == -1 && cor->status == CO_FINISHED) DestroyCoroutine(id);
 
@@ -173,7 +175,10 @@ uintptr_t CoroutineScheduler::SchedulerImpl::Yield(uintptr_t y)
     cor->status = CO_SUSPENDED;
 
     swapcontext(&cor->cxt, &mainContext_);
-    return cor->yield;
+
+    uintptr_t ret = cor->yield;
+    cor->yield = 0;
+    return ret;
 }
 
 CoroutineScheduler::CoroutineScheduler(int stacksize)
