@@ -16,7 +16,7 @@ struct coroutine
     uintptr_t yield;
     CoroutineScheduler::CoFunc func;
 
-    char stack[0];
+    char* stack;
 };
 
 class CoroutineScheduler::SchedulerImpl
@@ -104,7 +104,8 @@ void CoroutineScheduler::SchedulerImpl::Schedule(void* arg)
 
 int CoroutineScheduler::SchedulerImpl::CreateCoroutine(CoroutineScheduler::CoFunc func, void* arg)
 {
-    coroutine* cor = (coroutine*)malloc(sizeof(coroutine) + stacksize_);
+    coroutine* cor = (coroutine*)malloc(sizeof(coroutine));
+    cor->stack = (char*)malloc(stacksize_);
 
     if (cor == NULL) return -1;
 
